@@ -26,6 +26,13 @@ namespace ApiMockServer.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Collection?> GetByNameAsync(string name)
+        {
+            return await _collection
+                .Find(x => x.Name == name)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task CreateAsync(Collection collection)
         {
             await _collection.InsertOneAsync(collection);

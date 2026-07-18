@@ -32,7 +32,7 @@ namespace ApiMockServer.Services
 
         public async Task CreateAsync(CreateMockEndpointDto dto)
         {
-            var existingEndpoint = await _repository.GetByIdAsync(dto.Path);
+            var existingEndpoint = await _repository.GetByPathAsync(dto.Path);
             if (existingEndpoint != null)
             {
                 throw new ArgumentException("Mock endpoint with the same path already exists.");

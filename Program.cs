@@ -35,7 +35,18 @@ builder.Services.AddScoped<IMockScenarioRepository, MockScenarioRepository>();
 // Register the MockScenarioService with the DI container
 builder.Services.AddScoped<IMockScenarioService, MockScenarioService>();
 
-// Add services to the container.
+// Add CORS policy to allow requests from the React frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Add controllers and Swagger for API documentation
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,8 +58,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
+app.UseCors("ReactPolicy");
 app.UseAuthorization();
 
 app.MapControllers();

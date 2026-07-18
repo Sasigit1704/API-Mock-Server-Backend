@@ -8,6 +8,8 @@ namespace ApiMockServer.Interfaces
 
         Task<Collection?> GetByIdAsync(string id);
 
+        Task<Collection?> GetByNameAsync(string name);
+
         Task CreateAsync(Collection collection);
 
         Task UpdateAsync(string id, Collection collection);

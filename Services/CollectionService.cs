@@ -30,7 +30,7 @@ namespace ApiMockServer.Services
 
         public async Task CreateAsync(CreateCollectionDto dto)
         {
-            var existingCollection = await _repository.GetByIdAsync(dto.Name);
+            var existingCollection = await _repository.GetByNameAsync(dto.Name);
             if (existingCollection != null)
             {
                 throw new ArgumentException("Collection with the same name already exists.");

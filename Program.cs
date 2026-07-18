@@ -30,6 +30,11 @@ builder.Services.AddScoped<IEnvironmentRepository, EnvironmentRepository>();
 // Register the EnvironmentService with the DI container
 builder.Services.AddScoped<IEnvironmentService, EnvironmentService>();
 
+// Register the MockScenarioRepository with the DI container
+builder.Services.AddScoped<IMockScenarioRepository, MockScenarioRepository>();
+// Register the MockScenarioService with the DI container
+builder.Services.AddScoped<IMockScenarioService, MockScenarioService>();
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

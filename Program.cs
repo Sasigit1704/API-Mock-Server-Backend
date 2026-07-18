@@ -25,6 +25,11 @@ builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 // Register the CollectionService with the DI container
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 
+// Register the EnvironmentRepository with the DI container
+builder.Services.AddScoped<IEnvironmentRepository, EnvironmentRepository>();
+// Register the EnvironmentService with the DI container
+builder.Services.AddScoped<IEnvironmentService, EnvironmentService>();
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

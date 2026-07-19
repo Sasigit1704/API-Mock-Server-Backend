@@ -32,10 +32,18 @@ namespace ApiMockServer.Services
 
         public async Task CreateAsync(CreateMockEndpointDto dto)
         {
-            var existingEndpoint = await _repository.GetByPathAsync(dto.Path);
+            var normalizedPath = dto.Path.StartsWith("/")
+                ? dto.Path
+                : "/" + dto.Path;
+
+            var existingEndpoint = await _repository.GetByMethodAndPathAsync(
+                dto.Method,
+                normalizedPath);
+
             if (existingEndpoint != null)
             {
-                throw new ArgumentException("Mock endpoint with the same path already exists.");
+                throw new ArgumentException(
+                    $"Endpoint {dto.Method.ToUpper()} {normalizedPath} already exists.");
             }
             
             if (!await _collectionRepository.ExistsAsync(dto.CollectionId))
@@ -60,15 +68,36 @@ namespace ApiMockServer.Services
         public async Task UpdateAsync(string id, UpdateMockEndpointDto dto)
         {
             var existingEndpoint = await _repository.GetByIdAsync(id);
+
             if (existingEndpoint == null)
             {
                 throw new ArgumentException("Mock endpoint not found.");
             }
+
+            var normalizedPath = dto.Path.StartsWith("/")
+                ? dto.Path
+                : "/" + dto.Path;
+
+            var duplicate = await _repository.GetByMethodAndPathAsync(
+                dto.Method,
+                normalizedPath);
+
+            if (duplicate != null && duplicate.Id != id)
+            {
+                throw new ArgumentException(
+                    $"Endpoint {dto.Method.ToUpper()} {normalizedPath} already exists.");
+            }
+
+            if (!await _collectionRepository.ExistsAsync(dto.CollectionId))
+            {
+                throw new ArgumentException("Collection does not exist.");
+            }
+
             var endpoint = new MockEndpoint
             {
                 Id = id,
                 Name = dto.Name,
-                Path = dto.Path.StartsWith("/") ? dto.Path : "/" + dto.Path,
+                Path = normalizedPath,
                 Method = dto.Method.ToUpper(),
                 StatusCode = dto.StatusCode,
                 ResponseBody = dto.ResponseBody,

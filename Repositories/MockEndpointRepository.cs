@@ -34,6 +34,15 @@ namespace ApiMockServer.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<MockEndpoint?> GetByMethodAndPathAsync(string method, string path)
+        {
+            return await _collection
+                .Find(x =>
+                    x.Method == method.ToUpper() &&
+                    x.Path.ToLower() == path.ToLower())
+                .FirstOrDefaultAsync();
+        }
+        
         public async Task CreateAsync(MockEndpoint endpoint)
         {
             await _collection.InsertOneAsync(endpoint);

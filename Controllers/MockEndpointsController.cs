@@ -43,7 +43,17 @@ namespace ApiMockServer.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.Message.Contains("already exists"))
+                {
+                    return Conflict(new
+                    {
+                        message = ex.Message
+                    });
+                }
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
             }
         }
 
@@ -57,7 +67,17 @@ namespace ApiMockServer.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.Message.Contains("already exists"))
+                {
+                    return Conflict(new
+                    {
+                        message = ex.Message
+                    });
+                }
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
             }
         }
 

@@ -17,5 +17,8 @@ namespace ApiMockServer.Models
 
         [BsonElement("description")]
         public string Description { get; set; } = string.Empty;
+
+        [BsonElement("status")]
+        public bool IsActive { get; set; }
     }
 }

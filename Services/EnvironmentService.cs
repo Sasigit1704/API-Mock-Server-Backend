@@ -25,11 +25,21 @@ namespace ApiMockServer.Services
 
         public async Task CreateAsync(CreateEnvironmentDto dto)
         {
+            if (dto.IsActive)
+            {
+                var environments = await _repository.GetAllAsync();
+                foreach (var env in environments)
+                {
+                    env.IsActive = false;
+                    await _repository.UpdateAsync(env.Id, env);
+                }
+            }            
             var environment = new MockEnvironment
             {
                 Name = dto.Name,
                 BaseUrl = dto.BaseUrl,
-                Description = dto.Description
+                Description = dto.Description,
+                IsActive = dto.IsActive
             };
 
             await _repository.CreateAsync(environment);
@@ -37,12 +47,22 @@ namespace ApiMockServer.Services
 
         public async Task UpdateAsync(string id, UpdateEnvironmentDto dto)
         {
+            if (dto.IsActive)
+            {
+                var environments = await _repository.GetAllAsync();
+                foreach (var env in environments)
+                {
+                    env.IsActive = false;
+                    await _repository.UpdateAsync(env.Id, env);
+                }
+            }   
             var environment = new MockEnvironment
             {
                 Id = id,
                 Name = dto.Name,
                 BaseUrl = dto.BaseUrl,
-                Description = dto.Description
+                Description = dto.Description,
+                IsActive = dto.IsActive
             };
 
             await _repository.UpdateAsync(id, environment);

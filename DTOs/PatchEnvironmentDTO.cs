@@ -1,17 +1,13 @@
 namespace ApiMockServer.DTOs
 {
-    public class PatchMockScenarioDto
+    public class PatchEnvironmentDTO
     {
-        public string? MockEndpointId { get; set; } = string.Empty;
+        public string? Name { get; set; }
 
-        public string? ScenarioName { get; set; } = string.Empty;
+        public string? BaseUrl { get; set; }
 
-        public int? StatusCode { get; set; }
+        public string? Description { get; set; }
 
-        public string? ResponseBody { get; set; } = string.Empty;
-
-        public int? Delay { get; set; }
-
-        public bool? IsActive { get; set; } = true;
+        public bool? IsActive { get; set; }
     }
 }

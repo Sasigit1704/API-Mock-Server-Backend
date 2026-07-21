@@ -1,6 +1,6 @@
 namespace ApiMockServer.DTOs
 {
-    public class UpdateMockEndpointDto
+    public class UpdateMockEndpointDTO
     {
         public string Name { get; set; } = string.Empty;
 

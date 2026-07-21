@@ -161,7 +161,14 @@ namespace ApiMockServer.Services
                 endpoint.IsEnabled = dto.IsEnabled.Value;
 
             if (dto.CollectionId != null)
+            {
+                if (!await _collectionRepository.ExistsAsync(dto.CollectionId))
+                {
+                    throw new ArgumentException("Collection does not exist.");
+                }
+
                 endpoint.CollectionId = dto.CollectionId;
+            }
 
             return await _repository.PatchAsync(id, endpoint);
         }

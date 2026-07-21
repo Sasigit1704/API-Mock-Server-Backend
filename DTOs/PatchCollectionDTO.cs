@@ -1,9 +1,9 @@
 namespace ApiMockServer.DTOs
 {
-    public class PatchCollectionDto
+    public class PatchCollectionDTO
     {
-        public string? Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
 
-        public string? Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
     }
 }

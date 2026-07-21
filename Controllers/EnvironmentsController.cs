@@ -47,7 +47,7 @@ namespace ApiMockServer.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(string id, PatchEnvironementDTO dto)
+        public async Task<IActionResult> Patch(string id, PatchEnvironmentDTO dto)
         {
             try
             {

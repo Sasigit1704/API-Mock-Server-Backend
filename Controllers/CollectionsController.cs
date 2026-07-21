@@ -33,14 +33,14 @@ namespace ApiMockServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCollectionDto dto)
+        public async Task<IActionResult> Create(CreateCollectionDTO dto)
         {
             await _service.CreateAsync(dto);
             return Ok("Collection created successfully.");
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, UpdateCollectionDto dto)
+        public async Task<IActionResult> Update(string id, UpdateCollectionDTO dto)
         {
             await _service.UpdateAsync(id, dto);
             return Ok("Collection updated successfully.");

@@ -47,6 +47,16 @@ namespace ApiMockServer.Repositories
                 collection);
         }
 
+        public async Task<bool> PatchAsync(string id, Collection collection)
+        {
+            collection.Id = id;
+            var result = await _endpoint.ReplaceOneAsync(
+                x => x.Id == endpoint.Id,
+                endpoint);
+
+            return result.ModifiedCount > 0;
+        }
+
         public async Task DeleteAsync(string id)
         {
             await _collection.DeleteOneAsync(

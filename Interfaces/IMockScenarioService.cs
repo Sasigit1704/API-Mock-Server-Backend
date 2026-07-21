@@ -9,9 +9,11 @@ namespace ApiMockServer.Interfaces
 
         Task<MockScenario?> GetByIdAsync(string id);
 
-        Task CreateAsync(CreateMockScenarioDto dto);
+        Task CreateAsync(CreateMockScenarioDTO dto);
 
-        Task UpdateAsync(string id, UpdateMockScenarioDto dto);
+        Task UpdateAsync(string id, UpdateMockScenarioDTO dto);
+
+        Task<bool> PatchAsync(string id, PatchMockScenarioDTO dto);
 
         Task DeleteAsync(string id);
 

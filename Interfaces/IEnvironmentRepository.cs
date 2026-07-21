@@ -12,6 +12,8 @@ namespace ApiMockServer.Interfaces
 
         Task UpdateAsync(string id, MockEnvironment environment);
 
+        Task<bool> PatchAsync(string id, MockEnvironment environment);
+
         Task DeleteAsync(string id);
     }
 }

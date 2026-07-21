@@ -34,7 +34,7 @@ namespace ApiMockServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateMockEndpointDto dto)
+        public async Task<IActionResult> Create(CreateMockEndpointDTO dto)
         {
             try 
             {
@@ -58,7 +58,7 @@ namespace ApiMockServer.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, UpdateMockEndpointDto dto)
+        public async Task<IActionResult> Update(string id, UpdateMockEndpointDTO dto)
         {
             try
             {
@@ -74,6 +74,35 @@ namespace ApiMockServer.Controllers
                         message = ex.Message
                     });
                 }
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(string id, PatchMockEndpointDTO dto)
+        {
+            try
+            {
+                var updated = await _service.PatchAsync(id, dto);
+
+                if (!updated)
+                    return NotFound();
+
+                return Ok("Mock endpoint patched successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                if (ex.Message.Contains("already exists"))
+                {
+                    return Conflict(new
+                    {
+                        message = ex.Message
+                    });
+                }
+
                 return BadRequest(new
                 {
                     message = ex.Message

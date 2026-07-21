@@ -12,6 +12,8 @@ namespace ApiMockServer.Interfaces
 
         Task UpdateAsync(string id, MockScenario scenario);
 
+        Task<bool> PatchAsync(string id, MockScenario scenario);
+
         Task DeleteAsync(string id);
 
         // Retrieves all mock scenarios associated with a specific mock endpoint ID.

@@ -33,17 +33,46 @@ namespace ApiMockServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateEnvironmentDto dto)
+        public async Task<IActionResult> Create(CreateEnvironmentDTO dto)
         {
             await _service.CreateAsync(dto);
             return Ok("Environment created successfully.");
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, UpdateEnvironmentDto dto)
+        public async Task<IActionResult> Update(string id, UpdateEnvironmentDTO dto)
         {
             await _service.UpdateAsync(id, dto);
             return Ok("Environment updated successfully.");
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(string id, PatchEnvironementDTO dto)
+        {
+            try
+            {
+                var updated = await _service.PatchAsync(id, dto);
+
+                if (!updated)
+                    return NotFound();
+
+                return Ok("Mock environment patched successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                if (ex.Message.Contains("already exists"))
+                {
+                    return Conflict(new
+                    {
+                        message = ex.Message
+                    });
+                }
+
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpDelete("{id}")]

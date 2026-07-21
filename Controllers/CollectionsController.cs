@@ -46,6 +46,35 @@ namespace ApiMockServer.Controllers
             return Ok("Collection updated successfully.");
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(string id, PatchCollectionDTO dto)
+        {
+            try
+            {
+                var updated = await _service.PatchAsync(id, dto);
+
+                if (!updated)
+                    return NotFound();
+
+                return Ok("Collection patched successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                if (ex.Message.Contains("already exists"))
+                {
+                    return Conflict(new
+                    {
+                        message = ex.Message
+                    });
+                }
+
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {

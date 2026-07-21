@@ -28,7 +28,7 @@ namespace ApiMockServer.Services
             return collection;
         }
 
-        public async Task CreateAsync(CreateCollectionDto dto)
+        public async Task CreateAsync(CreateCollectionDTO dto)
         {
             var existingCollection = await _repository.GetByNameAsync(dto.Name);
             if (existingCollection != null)
@@ -44,7 +44,7 @@ namespace ApiMockServer.Services
             await _repository.CreateAsync(collection);
         }
 
-        public async Task UpdateAsync(string id, UpdateCollectionDto dto)
+        public async Task UpdateAsync(string id, UpdateCollectionDTO dto)
         {
             var existingCollection = await _repository.GetByIdAsync(id);
             if (existingCollection == null)
@@ -59,6 +59,35 @@ namespace ApiMockServer.Services
             };
 
             await _repository.UpdateAsync(id, collection);
+        }
+
+        public async Task<bool> PatchAsync(string id, PatchCollectionDTO dto)
+        {
+            var collection = await _repository.GetByIdAsync(id);
+
+            if (collection == null)
+            {
+                throw new ArgumentException("Collection not found.");
+            }
+
+            if (dto.Name != null)
+            {
+                var existingCollection = await _repository.GetByNameAsync(dto.Name);
+
+                if (existingCollection != null && existingCollection.Id != id)
+                {
+                    throw new ArgumentException("Collection with the same name already exists.");
+                }
+
+                collection.Name = dto.Name;
+            }
+
+            if (dto.Description != null)
+            {
+                collection.Description = dto.Description;
+            }
+
+            return await _repository.PatchAsync(id, collection);
         }
 
         public async Task DeleteAsync(string id)

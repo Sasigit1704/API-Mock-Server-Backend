@@ -16,6 +16,8 @@ namespace ApiMockServer.Interfaces
 
         Task UpdateAsync(string id, MockEndpoint endpoint);
 
+        Task<bool> PatchAsync(string id, MockEndpoint endpoint);
+
         Task DeleteAsync(string id);
     }
 }

@@ -14,6 +14,8 @@ namespace ApiMockServer.Interfaces
 
         Task UpdateAsync(string id, Collection collection);
 
+        Task<bool> PatchAsync(string id, Collection collection);
+
         Task DeleteAsync(string id);
 
         Task<bool> ExistsAsync(string id);

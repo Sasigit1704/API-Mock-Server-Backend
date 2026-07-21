@@ -41,17 +41,45 @@ namespace ApiMockServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateMockScenarioDto dto)
+        public async Task<IActionResult> Create(CreateMockScenarioDTO dto)
         {
             await _service.CreateAsync(dto);
             return Ok("Mock Scenario created successfully.");
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, UpdateMockScenarioDto dto)
+        public async Task<IActionResult> Update(string id, UpdateMockScenarioDTO dto)
         {
             await _service.UpdateAsync(id, dto);
             return Ok("Mock Scenario updated successfully.");
+        }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(string id, PatchMockScenarioDTO dto)
+        {
+            try
+            {
+                var updated = await _service.PatchAsync(id, dto);
+
+                if (!updated)
+                    return NotFound();
+
+                return Ok("Mock scenario patched successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                if (ex.Message.Contains("already exists"))
+                {
+                    return Conflict(new
+                    {
+                        message = ex.Message
+                    });
+                }
+
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpDelete("{id}")]

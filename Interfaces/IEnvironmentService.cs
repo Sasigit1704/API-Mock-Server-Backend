@@ -9,9 +9,11 @@ namespace ApiMockServer.Interfaces
 
         Task<MockEnvironment?> GetByIdAsync(string id);
 
-        Task CreateAsync(CreateEnvironmentDto dto);
+        Task CreateAsync(CreateEnvironmentDTO dto);
 
-        Task UpdateAsync(string id, UpdateEnvironmentDto dto);
+        Task UpdateAsync(string id, UpdateEnvironmentDTO dto);
+
+        Task<bool> PatchAsync(string id, PatchEnvironmentDTO dto);
 
         Task DeleteAsync(string id);
     }

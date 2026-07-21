@@ -32,7 +32,7 @@ namespace ApiMockServer.Services
             return await _repository.GetByMockEndpointIdAsync(mockEndpointId);
         }
 
-        public async Task CreateAsync(CreateMockScenarioDto dto)
+        public async Task CreateAsync(CreateMockScenarioDTO dto)
         {
             var endpoint = await _endpointRepository.GetByIdAsync(dto.MockEndpointId);
 
@@ -54,7 +54,7 @@ namespace ApiMockServer.Services
             await _repository.CreateAsync(scenario);
         }
 
-        public async Task UpdateAsync(string id, UpdateMockScenarioDto dto)
+        public async Task UpdateAsync(string id, UpdateMockScenarioDTO dto)
         {
             var existingScenario = await _repository.GetByIdAsync(id);
 
@@ -78,6 +78,45 @@ namespace ApiMockServer.Services
             existingScenario.IsActive = dto.IsActive;
 
             await _repository.UpdateAsync(id, existingScenario);
+        }
+
+        public async Task<bool> PatchAsync(string id, PatchMockScenarioDTO dto)
+        {
+            var scenario = await _repository.GetByIdAsync(id);
+
+            if (scenario == null)
+            {
+                throw new ArgumentException("MockScenario not found.");
+            }
+
+            if (dto.MockEndpointId != null)
+            {
+                var endpoint = await _endpointRepository.GetByIdAsync(dto.MockEndpointId);
+
+                if (endpoint == null)
+                {
+                    throw new ArgumentException("MockEndpoint does not exist.");
+                }
+
+                scenario.MockEndpointId = dto.MockEndpointId;
+            }
+
+            if (dto.ScenarioName != null)
+                scenario.ScenarioName = dto.ScenarioName;
+
+            if (dto.StatusCode.HasValue)
+                scenario.StatusCode = dto.StatusCode.Value;
+
+            if (dto.ResponseBody != null)
+                scenario.ResponseBody = dto.ResponseBody;
+
+            if (dto.Delay.HasValue)
+                scenario.Delay = dto.Delay.Value;
+
+            if (dto.IsActive.HasValue)
+                scenario.IsActive = dto.IsActive.Value;
+
+            return await _repository.PatchAsync(id, scenario);
         }
 
         public async Task DeleteAsync(string id)

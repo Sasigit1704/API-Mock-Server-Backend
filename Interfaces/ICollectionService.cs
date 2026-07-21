@@ -9,9 +9,11 @@ namespace ApiMockServer.Interfaces
 
         Task<Collection?> GetByIdAsync(string id);
 
-        Task CreateAsync(CreateCollectionDto dto);
+        Task CreateAsync(CreateCollectionDTO dto);
 
-        Task UpdateAsync(string id, UpdateCollectionDto dto);
+        Task UpdateAsync(string id, UpdateCollectionDTO dto);
+
+        Task<bool> PatchAsync(string id, PatchCollectionDTO dto);
 
         Task DeleteAsync(string id);
     }

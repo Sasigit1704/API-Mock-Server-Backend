@@ -9,6 +9,10 @@ namespace ApiMockServer.Interfaces
 
         Task<MockScenario?> GetByIdAsync(string id);
 
+        Task<MockScenario?> GetActiveScenarioAsync(string mockEndpointId);
+
+        Task<List<MockScenario>> GetByMockEndpointIdAsync(string mockEndpointId);
+        
         Task CreateAsync(CreateMockScenarioDTO dto);
 
         Task UpdateAsync(string id, UpdateMockScenarioDTO dto);
@@ -17,6 +21,5 @@ namespace ApiMockServer.Interfaces
 
         Task DeleteAsync(string id);
 
-        Task<List<MockScenario>> GetByMockEndpointIdAsync(string mockEndpointId);
     }
 }

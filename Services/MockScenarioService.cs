@@ -27,6 +27,11 @@ namespace ApiMockServer.Services
             return await _repository.GetByIdAsync(id);
         }
 
+        public async Task<MockScenario?> GetActiveScenarioAsync(string mockEndpointId)
+        {
+            return await _repository.GetActiveScenarioAsync(mockEndpointId);
+        }
+
         public async Task<List<MockScenario>> GetByMockEndpointIdAsync(string mockEndpointId)
         {
             return await _repository.GetByMockEndpointIdAsync(mockEndpointId);

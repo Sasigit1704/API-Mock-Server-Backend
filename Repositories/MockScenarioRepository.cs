@@ -24,6 +24,14 @@ namespace ApiMockServer.Repositories
             return await _scenario.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<MockScenario?> GetActiveScenarioAsync(string mockEndpointId)
+        {
+            return await _scenario.Find( x =>
+                x.MockEndpointId == mockEndpointId &&
+                x.IsActive)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task CreateAsync(MockScenario scenario)
         {
             await _scenario.InsertOneAsync(scenario);

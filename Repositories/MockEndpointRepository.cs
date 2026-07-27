@@ -36,12 +36,19 @@ namespace ApiMockServer.Repositories
 
         public async Task<MockEndpoint?> GetByMethodAndPathAsync(string method, string path)
         {
-            return await _endpoint
+            var endpoints = await _endpoint
                 .Find(x =>
                     x.Method == method.ToUpper() &&
-                    x.Path.ToLower() == path.ToLower() &&
                     x.IsEnabled)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
+            foreach (var endpoint in endpoints)
+            {
+                if(IsPathMatch(endpoint.Path, path))
+                {
+                    return endpoint;
+                }
+            }
+            return null;
         }
         
         public async Task CreateAsync(MockEndpoint endpoint)
@@ -72,6 +79,30 @@ namespace ApiMockServer.Repositories
         {
             await _endpoint.DeleteOneAsync(
                 x => x.Id == id);
+        }
+
+        private bool IsPathMatch(string storedPath, string requestPath)
+        {
+            var storedSegments = storedPath.Trim('/').Split('/');
+            var requestSegments = requestPath.Trim('/').Split('/');
+
+            if (storedSegments.Length != requestSegments.Length)
+                return false;
+            for (int i = 0; i < storedSegments.Length; i++)
+            {
+                if (storedSegments[i].StartsWith("{") &&
+                    storedSegments[i].EndsWith("}"))
+                {
+                    continue;
+                }
+                if (!storedSegments[i].Equals(
+                        requestSegments[i],
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

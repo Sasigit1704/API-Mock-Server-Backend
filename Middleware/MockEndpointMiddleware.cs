@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using ApiMockServer.Models;
 using ApiMockServer.Interfaces;
 using Microsoft.AspNetCore.Http;
 
@@ -10,7 +12,13 @@ namespace ApiMockServer.Middleware {
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IMockEndpointService mockEndpointService, IMockScenarioService mockScenarioService) {
+        public async Task InvokeAsync(
+        HttpContext context,
+        IMockEndpointService mockEndpointService,
+        IMockScenarioService mockScenarioService,
+        IRequestHistoryService requestHistoryService)
+        {
+            var stopwatch = Stopwatch.StartNew();
             var method = context.Request.Method;
             var path = context.Request.Path.Value ?? String.Empty;
             var endpoint = await mockEndpointService.GetByMethodAndPathAsync(method, path);
@@ -20,11 +28,35 @@ namespace ApiMockServer.Middleware {
                     if (scenario.Delay > 0) {
                         await Task.Delay(scenario.Delay);
                     }
+                    stopwatch.Stop();
+
+                    await requestHistoryService.CreateAsync(new RequestHistory
+                    {
+                        Method = method,
+                        Path = path,
+                        StatusCode = scenario.StatusCode,
+                        RequestTime = DateTime.UtcNow,
+                        ResponseTimeMs = stopwatch.ElapsedMilliseconds,
+                        MockEndpointId = endpoint.Id,
+                        MockScenarioId = scenario.Id
+                    });
                     context.Response.ContentType = "application/json";
                     context.Response.StatusCode = scenario.StatusCode;
                     await context.Response.WriteAsync(scenario.ResponseBody);
                     return;
-            }
+                }
+                stopwatch.Stop();
+
+                await requestHistoryService.CreateAsync(new RequestHistory
+                {
+                    Method = method,
+                    Path = path,
+                    StatusCode = endpoint.StatusCode,
+                    RequestTime = DateTime.UtcNow,
+                    ResponseTimeMs = stopwatch.ElapsedMilliseconds,
+                    MockEndpointId = endpoint.Id,
+                    MockScenarioId = null
+                });
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = endpoint.StatusCode;
                 await context.Response.WriteAsync(endpoint.ResponseBody);

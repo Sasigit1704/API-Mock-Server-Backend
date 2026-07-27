@@ -39,7 +39,8 @@ namespace ApiMockServer.Repositories
             return await _endpoint
                 .Find(x =>
                     x.Method == method.ToUpper() &&
-                    x.Path.ToLower() == path.ToLower())
+                    x.Path.ToLower() == path.ToLower() &&
+                    x.IsEnabled)
                 .FirstOrDefaultAsync();
         }
         

@@ -30,6 +30,11 @@ namespace ApiMockServer.Services
             return endpoint;
         }
 
+        public async Task<MockEndpoint?> GetByMethodAndPathAsync(string method, string path)
+        {
+            return await _repository.GetByMethodAndPathAsync(method, path);
+        }
+
         public async Task CreateAsync(CreateMockEndpointDTO dto)
         {
             var normalizedPath = dto.Path.StartsWith("/")

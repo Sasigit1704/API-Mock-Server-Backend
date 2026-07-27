@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using ApiMockServer.Repositories;
 using ApiMockServer.Interfaces;
 using ApiMockServer.Services;
+using ApiMockServer.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,8 +59,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
+
+app.UseMiddleware<MockEndpointMiddleware>();
+
 app.UseCors("ReactPolicy");
+
 app.UseAuthorization();
 
 app.MapControllers();

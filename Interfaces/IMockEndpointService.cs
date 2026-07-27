@@ -9,6 +9,8 @@ namespace ApiMockServer.Interfaces
 
         Task<MockEndpoint?> GetByIdAsync(string id);
 
+        Task<MockEndpoint?> GetByMethodAndPathAsync(string method, string path);
+
         Task CreateAsync(CreateMockEndpointDTO dto);
 
         Task UpdateAsync(string id, UpdateMockEndpointDTO dto);

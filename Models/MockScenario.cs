@@ -27,5 +27,11 @@ namespace ApiMockServer.Models
 
         [BsonElement("isActive")]
         public bool IsActive { get; set; } = true;
+
+        [BsonElement("enableRandomFailure")]
+        public bool EnableRandomFailure { get; set; } = false;
+
+        [BsonElement("failureRate")]
+        public int FailureRate { get; set; } = 0;
     }
 }

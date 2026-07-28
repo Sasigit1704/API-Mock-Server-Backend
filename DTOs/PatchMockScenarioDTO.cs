@@ -13,5 +13,9 @@ namespace ApiMockServer.DTOs
         public int? Delay { get; set; }
 
         public bool? IsActive { get; set; }
+
+        public bool? EnableRandomFailure { get; set; }
+
+        public int? FailureRate { get; set; }
     }
 }

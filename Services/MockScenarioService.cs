@@ -46,6 +46,11 @@ namespace ApiMockServer.Services
                 throw new ArgumentException("MockEndpoint does not exist.");
             }
 
+            if (dto.FailureRate < 0 || dto.FailureRate > 100)
+            {
+                throw new ArgumentException("Failure Rate must be between 0 and 100.");
+            }
+
             var scenario = new MockScenario
             {
                 MockEndpointId = dto.MockEndpointId,
@@ -53,7 +58,9 @@ namespace ApiMockServer.Services
                 StatusCode = dto.StatusCode,
                 ResponseBody = dto.ResponseBody,
                 Delay = dto.Delay,
-                IsActive = dto.IsActive
+                IsActive = dto.IsActive,
+                EnableRandomFailure = dto.EnableRandomFailure,
+                FailureRate = dto.FailureRate
             };
 
             await _repository.CreateAsync(scenario);
@@ -73,6 +80,11 @@ namespace ApiMockServer.Services
             if (endpoint == null)
             {
                 throw new ArgumentException("MockEndpoint does not exist.");
+            }
+
+            if (dto.FailureRate < 0 || dto.FailureRate > 100)
+            {
+                throw new ArgumentException("Failure Rate must be between 0 and 100.");
             }
 
             existingScenario.MockEndpointId = dto.MockEndpointId;
@@ -120,6 +132,18 @@ namespace ApiMockServer.Services
 
             if (dto.IsActive.HasValue)
                 scenario.IsActive = dto.IsActive.Value;
+
+            if(dto.EnableRandomFailure.HasValue)
+                scenario.EnableRandomFailure = dto.EnableRandomFailure.Value;
+
+            if(dto.FailureRate.HasValue)
+            {
+                if (dto.FailureRate < 0 || dto.FailureRate > 100)
+                {
+                    throw new ArgumentException("Failure Rate must be between 0 and 100.");
+                }
+                scenario.FailureRate = dto.FailureRate.Value;
+            }
 
             return await _repository.PatchAsync(id, scenario);
         }

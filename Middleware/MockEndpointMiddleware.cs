@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using ApiMockServer.Models;
 using ApiMockServer.Interfaces;
@@ -7,6 +8,7 @@ namespace ApiMockServer.Middleware {
 
     public class MockEndpointMiddleware {
         private readonly RequestDelegate _next;
+        private static readonly Random _random = new();
 
         public MockEndpointMiddleware(RequestDelegate next) {
             _next = next;
@@ -27,6 +29,39 @@ namespace ApiMockServer.Middleware {
                 if (scenario!= null) {
                     if (scenario.Delay > 0) {
                         await Task.Delay(scenario.Delay);
+                    }
+                    if (scenario.EnableRandomFailure)
+                    {
+                        int randomNumber = _random.Next(1, 101);
+
+                        if (randomNumber <= scenario.FailureRate)
+                        {
+                            stopwatch.Stop();
+
+                            await requestHistoryService.CreateAsync(new RequestHistory
+                            {
+                                Method = method,
+                                Path = path,
+                                StatusCode = StatusCodes.Status500InternalServerError,
+                                RequestTime = DateTime.UtcNow,
+                                ResponseTimeMs = stopwatch.ElapsedMilliseconds,
+                                MockEndpointId = endpoint.Id,
+                                MockScenarioId = scenario.Id
+                            });
+
+                            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                            context.Response.ContentType = "application/json";
+
+                            await context.Response.WriteAsync("""
+                            {
+                                "success": false,
+                                "message": "Random Failure Simulation",
+                                "statusCode": 500
+                            }
+                            """);
+
+                            return;
+                        }
                     }
                     stopwatch.Stop();
 

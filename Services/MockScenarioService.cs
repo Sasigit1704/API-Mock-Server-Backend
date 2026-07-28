@@ -51,6 +51,11 @@ namespace ApiMockServer.Services
                 throw new ArgumentException("Failure Rate must be between 0 and 100.");
             }
 
+            if (dto.TimeoutDelay < 0)
+            {
+                throw new ArgumentException("Timeout Delay cannot be negative.");
+            }
+
             var scenario = new MockScenario
             {
                 MockEndpointId = dto.MockEndpointId,
@@ -60,7 +65,9 @@ namespace ApiMockServer.Services
                 Delay = dto.Delay,
                 IsActive = dto.IsActive,
                 EnableRandomFailure = dto.EnableRandomFailure,
-                FailureRate = dto.FailureRate
+                FailureRate = dto.FailureRate,
+                EnableTimeout = dto.EnableTimeout,
+                TimeoutDelay = dto.TimeoutDelay
             };
 
             await _repository.CreateAsync(scenario);
@@ -87,12 +94,19 @@ namespace ApiMockServer.Services
                 throw new ArgumentException("Failure Rate must be between 0 and 100.");
             }
 
+            if (dto.TimeoutDelay < 0)
+            {
+                throw new ArgumentException("Timeout Delay cannot be negative.");
+            }
+
             existingScenario.MockEndpointId = dto.MockEndpointId;
             existingScenario.ScenarioName = dto.ScenarioName;
             existingScenario.StatusCode = dto.StatusCode;
             existingScenario.ResponseBody = dto.ResponseBody;
             existingScenario.Delay = dto.Delay;
             existingScenario.IsActive = dto.IsActive;
+            existingScenario.EnableTimeout = dto.EnableTimeout;
+            existingScenario.TimeoutDelay = dto.TimeoutDelay;
 
             await _repository.UpdateAsync(id, existingScenario);
         }
@@ -143,6 +157,21 @@ namespace ApiMockServer.Services
                     throw new ArgumentException("Failure Rate must be between 0 and 100.");
                 }
                 scenario.FailureRate = dto.FailureRate.Value;
+            }
+
+            if (dto.EnableTimeout.HasValue)
+            {
+                scenario.EnableTimeout = dto.EnableTimeout.Value;
+            }
+
+            if (dto.TimeoutDelay.HasValue)
+            {
+                if (dto.TimeoutDelay.Value < 0)
+                {
+                    throw new ArgumentException("Timeout Delay cannot be negative.");
+                }
+
+                scenario.TimeoutDelay = dto.TimeoutDelay.Value;
             }
 
             return await _repository.PatchAsync(id, scenario);

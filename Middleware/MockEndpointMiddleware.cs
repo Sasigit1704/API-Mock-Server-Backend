@@ -30,6 +30,36 @@ namespace ApiMockServer.Middleware {
                     if (scenario.Delay > 0) {
                         await Task.Delay(scenario.Delay);
                     }
+                    if (scenario.EnableTimeout)
+                    {
+                        await Task.Delay(scenario.TimeoutDelay);
+
+                        stopwatch.Stop();
+
+                        await requestHistoryService.CreateAsync(new RequestHistory
+                        {
+                            Method = method,
+                            Path = path,
+                            StatusCode = StatusCodes.Status408RequestTimeout,
+                            RequestTime = DateTime.UtcNow,
+                            ResponseTimeMs = stopwatch.ElapsedMilliseconds,
+                            MockEndpointId = endpoint.Id,
+                            MockScenarioId = scenario.Id
+                        });
+
+                        context.Response.StatusCode = StatusCodes.Status408RequestTimeout;
+                        context.Response.ContentType = "application/json";
+
+                        await context.Response.WriteAsync("""
+                        {
+                            "success": false,
+                            "message": "Request Timeout Simulation",
+                            "statusCode": 408
+                        }
+                        """);
+
+                        return;
+                    }
                     if (scenario.EnableRandomFailure)
                     {
                         int randomNumber = _random.Next(1, 101);
@@ -63,6 +93,7 @@ namespace ApiMockServer.Middleware {
                             return;
                         }
                     }
+                   
                     stopwatch.Stop();
 
                     await requestHistoryService.CreateAsync(new RequestHistory

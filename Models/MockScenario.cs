@@ -33,5 +33,11 @@ namespace ApiMockServer.Models
 
         [BsonElement("failureRate")]
         public int FailureRate { get; set; } = 0;
+
+        [BsonElement("enableTimeout")]
+        public bool EnableTimeout { get; set; }
+
+        [BsonElement("timeoutDelay")]
+        public int TimeoutDelay { get; set; }
     }
 }

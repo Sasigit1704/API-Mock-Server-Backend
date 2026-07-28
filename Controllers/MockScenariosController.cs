@@ -40,6 +40,17 @@ namespace ApiMockServer.Controllers
             return Ok(scenarios);
         }
 
+        [HttpGet("active/{mockEndpointId}")]
+        public async Task<IActionResult> GetActiveScenario(string mockEndpointId)
+        {
+            var scenarios = await _service.GetActiveScenarioAsync(mockEndpointId);
+
+            if (scenarios == null)
+                return NotFound();
+
+            return Ok(scenarios);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateMockScenarioDTO dto)
         {

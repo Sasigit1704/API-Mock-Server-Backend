@@ -37,24 +37,14 @@ namespace ApiMockServer.Services
             return await _repository.GetByMockEndpointIdAsync(mockEndpointId);
         }
 
+// POST
         public async Task CreateAsync(CreateMockScenarioDTO dto)
         {
-            var endpoint = await _endpointRepository.GetByIdAsync(dto.MockEndpointId);
+            await ValidateEndpointExistsAsync(dto.MockEndpointId);
 
-            if (endpoint == null)
-            {
-                throw new ArgumentException("MockEndpoint does not exist.");
-            }
+            ValidateFailureRate(dto.FailureRate);
 
-            if (dto.FailureRate < 0 || dto.FailureRate > 100)
-            {
-                throw new ArgumentException("Failure Rate must be between 0 and 100.");
-            }
-
-            if (dto.TimeoutDelay < 0)
-            {
-                throw new ArgumentException("Timeout Delay cannot be negative.");
-            }
+            ValidateTimeoutDelay(dto.TimeoutDelay);
 
             var scenario = new MockScenario
             {
@@ -70,9 +60,15 @@ namespace ApiMockServer.Services
                 TimeoutDelay = dto.TimeoutDelay
             };
 
+            if (scenario.IsActive)
+            {
+                await DeactivateOtherScenariosAsync(scenario.MockEndpointId, string.Empty);
+            }
+
             await _repository.CreateAsync(scenario);
         }
 
+// PUT
         public async Task UpdateAsync(string id, UpdateMockScenarioDTO dto)
         {
             var existingScenario = await _repository.GetByIdAsync(id);
@@ -82,22 +78,11 @@ namespace ApiMockServer.Services
                 throw new ArgumentException("MockScenario not found.");
             }
 
-            var endpoint = await _endpointRepository.GetByIdAsync(dto.MockEndpointId);
+            await ValidateEndpointExistsAsync(dto.MockEndpointId);
 
-            if (endpoint == null)
-            {
-                throw new ArgumentException("MockEndpoint does not exist.");
-            }
+            ValidateFailureRate(dto.FailureRate);
 
-            if (dto.FailureRate < 0 || dto.FailureRate > 100)
-            {
-                throw new ArgumentException("Failure Rate must be between 0 and 100.");
-            }
-
-            if (dto.TimeoutDelay < 0)
-            {
-                throw new ArgumentException("Timeout Delay cannot be negative.");
-            }
+            ValidateTimeoutDelay(dto.TimeoutDelay);
 
             existingScenario.MockEndpointId = dto.MockEndpointId;
             existingScenario.ScenarioName = dto.ScenarioName;
@@ -105,26 +90,20 @@ namespace ApiMockServer.Services
             existingScenario.ResponseBody = dto.ResponseBody;
             existingScenario.Delay = dto.Delay;
             existingScenario.IsActive = dto.IsActive;
+            existingScenario.EnableRandomFailure = dto.EnableRandomFailure;
+            existingScenario.FailureRate = dto.FailureRate;
             existingScenario.EnableTimeout = dto.EnableTimeout;
             existingScenario.TimeoutDelay = dto.TimeoutDelay;
             
             if (existingScenario.IsActive)
             {
-                var scenarios = await _repository.GetByMockEndpointIdAsync(existingScenario.MockEndpointId);
-
-                foreach (var item in scenarios)
-                {
-                    if (item.Id != existingScenario.Id)
-                    {
-                        item.IsActive = false;
-                        await _repository.UpdateAsync(item.Id, item);
-                    }
-                }
+                await DeactivateOtherScenariosAsync(existingScenario.MockEndpointId, existingScenario.Id);
             }
 
             await _repository.UpdateAsync(id, existingScenario);
         }
 
+// PATCH
         public async Task<bool> PatchAsync(string id, PatchMockScenarioDTO dto)
         {
             var scenario = await _repository.GetByIdAsync(id);
@@ -136,12 +115,7 @@ namespace ApiMockServer.Services
 
             if (dto.MockEndpointId != null)
             {
-                var endpoint = await _endpointRepository.GetByIdAsync(dto.MockEndpointId);
-
-                if (endpoint == null)
-                {
-                    throw new ArgumentException("MockEndpoint does not exist.");
-                }
+                await ValidateEndpointExistsAsync(dto.MockEndpointId);
 
                 scenario.MockEndpointId = dto.MockEndpointId;
             }
@@ -166,10 +140,8 @@ namespace ApiMockServer.Services
 
             if(dto.FailureRate.HasValue)
             {
-                if (dto.FailureRate < 0 || dto.FailureRate > 100)
-                {
-                    throw new ArgumentException("Failure Rate must be between 0 and 100.");
-                }
+                ValidateFailureRate(dto.FailureRate.Value);
+
                 scenario.FailureRate = dto.FailureRate.Value;
             }
 
@@ -180,26 +152,14 @@ namespace ApiMockServer.Services
 
             if (dto.TimeoutDelay.HasValue)
             {
-                if (dto.TimeoutDelay.Value < 0)
-                {
-                    throw new ArgumentException("Timeout Delay cannot be negative.");
-                }
+                ValidateTimeoutDelay(dto.TimeoutDelay.Value);
 
                 scenario.TimeoutDelay = dto.TimeoutDelay.Value;
             }
             
             if (scenario.IsActive)
             {
-                var scenarios = await _repository.GetByMockEndpointIdAsync(scenario.MockEndpointId);
-
-                foreach (var item in scenarios)
-                {
-                    if (item.Id != scenario.Id)
-                    {
-                        item.IsActive = false;
-                        await _repository.UpdateAsync(item.Id, item);
-                    }
-                }
+                await DeactivateOtherScenariosAsync(scenario.MockEndpointId, scenario.Id);
             }
 
             return await _repository.PatchAsync(id, scenario);
@@ -208,6 +168,52 @@ namespace ApiMockServer.Services
         public async Task DeleteAsync(string id)
         {
             await _repository.DeleteAsync(id);
+        }
+
+//HELPER METHODS
+
+// Reusable code for Deactivating other Scenarios
+        private async Task DeactivateOtherScenariosAsync(string mockEndpointId, string currentScenarioId)
+        {
+            var scenarios = await _repository.GetByMockEndpointIdAsync(mockEndpointId);
+
+            foreach (var item in scenarios)
+            {
+                if (item.Id != currentScenarioId && item.IsActive)
+                {
+                    item.IsActive = false;
+                    await _repository.UpdateAsync(item.Id, item);
+                }
+            }
+        }
+
+// Reusable Code for Validating Failure Rate
+        private void ValidateFailureRate(int failureRate)
+        {
+            if (failureRate < 0 || failureRate > 100)
+            {
+                throw new ArgumentException("Failure Rate must be between 0 and 100.");
+            }
+        }
+
+// Reusable Code for Validating Timeout Delay
+        private void ValidateTimeoutDelay(int timeoutDelay)
+        {
+            if (timeoutDelay < 0)
+            {
+                throw new ArgumentException("Timeout Delay cannot be negative.");
+            }
+        }
+
+// Reusable Code for Validating Endpoint Existance
+        private async Task ValidateEndpointExistsAsync(string endpointId)
+        {
+            var endpoint = await _endpointRepository.GetByIdAsync(endpointId);
+
+            if (endpoint == null)
+            {
+                throw new ArgumentException("MockEndpoint does not exist.");
+            }
         }
     }
 }

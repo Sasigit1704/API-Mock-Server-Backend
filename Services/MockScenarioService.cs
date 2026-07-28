@@ -107,6 +107,20 @@ namespace ApiMockServer.Services
             existingScenario.IsActive = dto.IsActive;
             existingScenario.EnableTimeout = dto.EnableTimeout;
             existingScenario.TimeoutDelay = dto.TimeoutDelay;
+            
+            if (existingScenario.IsActive)
+            {
+                var scenarios = await _repository.GetByMockEndpointIdAsync(existingScenario.MockEndpointId);
+
+                foreach (var item in scenarios)
+                {
+                    if (item.Id != existingScenario.Id)
+                    {
+                        item.IsActive = false;
+                        await _repository.UpdateAsync(item.Id, item);
+                    }
+                }
+            }
 
             await _repository.UpdateAsync(id, existingScenario);
         }
@@ -172,6 +186,20 @@ namespace ApiMockServer.Services
                 }
 
                 scenario.TimeoutDelay = dto.TimeoutDelay.Value;
+            }
+            
+            if (scenario.IsActive)
+            {
+                var scenarios = await _repository.GetByMockEndpointIdAsync(scenario.MockEndpointId);
+
+                foreach (var item in scenarios)
+                {
+                    if (item.Id != scenario.Id)
+                    {
+                        item.IsActive = false;
+                        await _repository.UpdateAsync(item.Id, item);
+                    }
+                }
             }
 
             return await _repository.PatchAsync(id, scenario);

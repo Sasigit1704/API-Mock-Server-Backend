@@ -10,8 +10,6 @@ namespace ApiMockServer.Interfaces
 
         Task<MockScenario?> GetActiveScenarioAsync(string mockEndpointId);
 
-        // Retrieves all mock scenarios associated with a specific mock endpoint ID.
-        Task<List<MockScenario>> GetByMockEndpointIdAsync(string mockEndpointId);
         Task CreateAsync(MockScenario scenario);
 
         Task UpdateAsync(string id, MockScenario scenario);
@@ -19,6 +17,9 @@ namespace ApiMockServer.Interfaces
         Task<bool> PatchAsync(string id, MockScenario scenario);
 
         Task DeleteAsync(string id);
+
+        // Retrieves all mock scenarios associated with a specific mock endpoint ID.
+        Task<List<MockScenario>> GetByMockEndpointIdAsync(string mockEndpointId);
 
     }
 }

@@ -135,6 +135,11 @@ namespace ApiMockServer.Services
             if (dto.IsActive.HasValue)
                 scenario.IsActive = dto.IsActive.Value;
 
+            if (scenario.IsActive)
+            {
+                await DeactivateOtherScenariosAsync(scenario.MockEndpointId, scenario.Id);
+            }
+
             if(dto.EnableRandomFailure.HasValue)
                 scenario.EnableRandomFailure = dto.EnableRandomFailure.Value;
 
@@ -157,11 +162,6 @@ namespace ApiMockServer.Services
                 scenario.TimeoutDelay = dto.TimeoutDelay.Value;
             }
             
-            if (scenario.IsActive)
-            {
-                await DeactivateOtherScenariosAsync(scenario.MockEndpointId, scenario.Id);
-            }
-
             return await _repository.PatchAsync(id, scenario);
         }
 

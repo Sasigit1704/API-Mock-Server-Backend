@@ -11,6 +11,9 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.10" />
     <PackageReference Include="MongoDB.Driver" Version="3.10.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <Compile Remove="ApiMockServer.Tests\**" />
+    <EmbeddedResource Remove="ApiMockServer.Tests\**" />
+    <None Remove="ApiMockServer.Tests\**" />
   </ItemGroup>
 
 </Project>

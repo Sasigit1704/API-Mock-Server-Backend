@@ -41,6 +41,9 @@ builder.Services.AddScoped<IRequestHistoryRepository, RequestHistoryRepository>(
 // Register the RequestHistoryService with the DI container
 builder.Services.AddScoped<IRequestHistoryService, RequestHistoryService>();
 
+// Register the MockExecutionService with the DI container
+builder.Services.AddScoped<IMockExecutionService, MockExecutionService>();
+
 // Add CORS policy to allow requests from the React frontend
 builder.Services.AddCors(options =>
 {

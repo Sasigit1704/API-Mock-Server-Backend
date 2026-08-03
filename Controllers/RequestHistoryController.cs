@@ -18,8 +18,7 @@ namespace ApiMockServer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var logs = await _service.GetAllAsync();
-            return Ok(logs);
+            return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet("{id}")]

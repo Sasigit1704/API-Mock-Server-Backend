@@ -179,7 +179,7 @@ ApiMockServer
 ## Clone Repository
 
 ```bash
-git clone <backend-repository-url>
+git clone <https://github.com/Sasigit1704/API-Mock-Server-Backend.git>
 ```
 
 ---

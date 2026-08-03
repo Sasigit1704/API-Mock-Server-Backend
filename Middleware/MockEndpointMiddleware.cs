@@ -118,7 +118,7 @@ namespace ApiMockServer.Middleware {
             string endpointId,
             string? scenarioId)
         {
-            await requestHistoryService.CreateAsync(new RequestHistory
+            await requestHistoryService.CreateAsync(new RequestLog
             {
                 Method = method,
                 Path = path,

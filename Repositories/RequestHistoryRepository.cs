@@ -7,21 +7,38 @@ namespace ApiMockServer.Repositories
 {
     public class RequestHistoryRepository : IRequestHistoryRepository
     {
-        private readonly IMongoCollection<RequestHistory> _logs;
+        private readonly IMongoCollection<RequestLog> _logs;
 
         public RequestHistoryRepository(MongoDbContext context)
         {
-            _logs = context.Database.GetCollection<RequestHistory>("RequestHistory");
+            _logs = context.Database.GetCollection<RequestLog>("RequestLogs");
         }
 
-        public async Task<List<RequestHistory>> GetAllAsync()
+        public async Task<List<RequestLog>> GetAllAsync()
         {
             return await _logs.Find(_ => true).ToListAsync();
         }
 
-        public async Task CreateAsync(RequestHistory log)
+        public async Task<RequestLog?> GetByIdAsync(string id)
+        {
+            return await _logs
+                .Find(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task CreateAsync(RequestLog log)
         {
             await _logs.InsertOneAsync(log);
+        }
+
+        public async Task DeleteAsync(string id)
+        {
+            await _logs.DeleteOneAsync(x => x.Id == id);
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            await _logs.DeleteManyAsync(_ => true);
         }
     }
 }

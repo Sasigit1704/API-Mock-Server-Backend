@@ -4,8 +4,14 @@ namespace ApiMockServer.Interfaces
 {
     public interface IRequestHistoryRepository
     {
-        Task<List<RequestHistory>> GetAllAsync();
+        Task<List<RequestLog>> GetAllAsync();
 
-        Task CreateAsync(RequestHistory log);
+        Task<RequestLog?> GetByIdAsync(string id);
+
+        Task CreateAsync(RequestLog log);
+
+        Task DeleteAsync(string id);
+
+        Task DeleteAllAsync();
     }
 }

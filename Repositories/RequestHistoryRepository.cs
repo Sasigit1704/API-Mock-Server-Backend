@@ -16,7 +16,7 @@ namespace ApiMockServer.Repositories
 
         public async Task<List<RequestLog>> GetAllAsync()
         {
-            return await _logs.Find(_ => true).ToListAsync();
+            return await _logs.Find(_ => true).SortByDescending(x => x.RequestTime).ToListAsync();
         }
 
         public async Task<RequestLog?> GetByIdAsync(string id)
